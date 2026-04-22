@@ -649,18 +649,20 @@
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                const userDoc = await getDoc(doc(db, 'users', user.uid));
-                if (userDoc.exists() && userDoc.data().role === 'admin') {
-                    currentAdmin = user;
-                    showDashboard();
-                } else {
-                    await signOut(auth);
-                    showLoginMessage('Access denied. Admin privileges required.', 'error');
-                }
-            } else {
-                showLogin();
-            }
-        });
+        // Bypass the database and check your email directly
+        if (user.email === 'nimissolomon@gmail.com') {
+            currentAdmin = user;
+            showDashboard();
+        } else {
+            // If anyone else tries to log in, they are kicked out
+            await signOut(auth);
+            showLoginMessage('Access denied. Admin privileges required.');
+        }
+    } else {
+        showLogin();
+    }
+});
+
 
         function showLogin() {
             document.getElementById('adminLogin').classList.remove('hidden');
